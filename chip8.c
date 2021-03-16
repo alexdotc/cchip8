@@ -2,6 +2,7 @@
 
 void cpu_cycle(Chip8 chip8)
 {
+    cycle(chip8.CPU);
     return;
 }
 
