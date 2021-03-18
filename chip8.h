@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct Chip8
@@ -20,9 +21,11 @@ typedef struct Chip8
     uint8_t gfx[2048];
     uint8_t key[16];
 
+    bool draw_cycle;
+
 } Chip8;
 
-void cycle(Chip8 *chip8);
+int cycle(Chip8 *chip8);
 void reset(Chip8 *chip8);
 void keypress(Chip8 *chip8);
 int load_rom(Chip8 *chip8, const char *path);

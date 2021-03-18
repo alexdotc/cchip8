@@ -30,13 +30,15 @@ int main(int argc, char **argv)
 
     while(1)
     {
-        SDL_PollEvent(&e);
+        cycle(&chip8);
+        if (chip8.draw_cycle) // opcode updated screen
+            break;
+
         if (e.type == SDL_QUIT){
             SDL_DestroyWindow(window);
             SDL_Quit();
             break;
         }
-        cycle(&chip8);
     }
     
     return 0;
