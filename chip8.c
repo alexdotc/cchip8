@@ -1,17 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "chip8.h"
 
-void cpu_cycle(Chip8 chip8)
+#define FONT_START 0x000
+#define PROGRAM_START 0x200
+
+const uint8_t fonts[80] =
+{ 
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+
+void cycle(Chip8 *chip8)
 {
-    cycle(chip8.CPU);
+    //fetch()
+    //decode()
+    //execute()
     return;
 }
 
-void load_game(Chip8 chip8, const char* title)
+int load_rom(Chip8 *chip8, const char *path)
 {
-    return;
+    FILE *f = fopen(path, "rb");
+    if (f == NULL){
+        perror("Load ROM failure: fopen()");
+        return EXIT_FAILURE;
+    }
+    fseek(f, 0, SEEK_END);
+    uint16_t len = ftell(f);
+    rewind(f);
+    fread(chip8->mem+PROGRAM_START, len, 1, f);
+
+    return 0;
 }
 
-void reset(Chip8 chip8)
+void reset(Chip8 *chip8)
 {
+    chip8->PC = PROGRAM_START;
+    chip8->I = 0;
+    chip8->SP = 0;
+    chip8->DT = 0;
+    chip8->DT = 0;
+
+    memset(chip8->mem, 0, chip8->memsize);
+    memset(chip8->gfx, 0, chip8->gfxsize);
+    memset(chip8->key, 0, 16);
+    memset(chip8->stack, 0, chip8->stacksize*sizeof(uint16_t));
+    memset(chip8->V, 0, 16*sizeof(uint16_t));
+
+    memcpy((chip8->mem)+FONT_START, fonts, sizeof(fonts));
+
     return;
 }

@@ -2,6 +2,10 @@
 #include <SDL.h>
 #include "chip8.h"
 
+#define MEMSIZE 4096
+#define GFXSIZE 2048
+#define STACKSIZE 16
+
 int main(int argc, char **argv)
 {
     SDL_Window *window = NULL;
@@ -18,21 +22,21 @@ int main(int argc, char **argv)
     }
     // set up input
 
-    Chip8 chip8;
+    Chip8 chip8 = { MEMSIZE, GFXSIZE, STACKSIZE };
 
-    reset(chip8);
-    load_game(chip8, "pong");
+    reset(&chip8);
+    load_rom(&chip8, "roms/pong.ch8");
     SDL_Event(e);
 
     while(1)
     {
         SDL_PollEvent(&e);
-	if (e.type == SDL_QUIT){
+        if (e.type == SDL_QUIT){
             SDL_DestroyWindow(window);
             SDL_Quit();
             break;
         }
-        cpu_cycle(chip8);
+        cycle(&chip8);
     }
     
     return 0;
