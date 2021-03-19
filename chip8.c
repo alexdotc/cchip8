@@ -6,14 +6,20 @@
 #define FONT_START 0x000
 #define PROG_START 0x200
 
-void SYS_Addr();
-void CLS(Chip8 *chip8);
-void RET(Chip8 *chip8);
-void DRW(Chip8 *chip8, uint16_t opcode);
-void JP_Addr(Chip8 *chip8, uint16_t opcode);
-void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
-void LD_I_Addr(Chip8 *chip, uint16_t opcode);
-void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline uint8_t decode_vx(uint16_t opcode);
+static inline uint8_t decode_vy(uint16_t opcode);
+static inline uint8_t decode_n(uint16_t opcode);
+static inline uint8_t decode_nn(uint16_t opcode);
+static inline uint16_t decode_nnn(uint16_t opcode);
+
+static inline void SYS_Addr();
+static inline void CLS(Chip8 *chip8);
+static inline void RET(Chip8 *chip8);
+static inline void DRW(Chip8 *chip8, uint16_t opcode);
+static inline void JP_Addr(Chip8 *chip8, uint16_t opcode);
+static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline void LD_I_Addr(Chip8 *chip, uint16_t opcode);
+static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 
 static const uint8_t fonts[80] =
 { 
@@ -94,58 +100,82 @@ int cycle(Chip8 *chip8)
     return 0;
 }
 
-void SYS_Addr()
+static inline uint8_t decode_vx(uint16_t opcode)
 {
-    // deliberately ignored, not useful on a modern interpreter
+    return (opcode & 0x0F00) >> 8;
+}
+
+static inline uint8_t decode_vy(uint16_t opcode)
+{
+    return (opcode & 0x00F0) >> 4;
+}
+
+static inline uint8_t decode_n(uint16_t opcode)
+{
+    return opcode & 0x000F;
+}
+
+static inline uint8_t decode_nn(uint16_t opcode)
+{
+    return opcode & 0x00FF;
+}
+
+static inline uint16_t decode_nnn(uint16_t opcode)
+{
+    return opcode & 0x0FFF;
+}
+
+static inline void SYS_Addr()
+{
+    // deliberately ignored, not used on modern CHIP-8 interpreters
     return;
 }
 
-void CLS(Chip8 *chip8)
+static inline void CLS(Chip8 *chip8)
 {
     memset(chip8->gfx, 0, chip8->gfxsize);
     chip8->draw_cycle = true;
     return;
 }
 
-void RET(Chip8 *chip8)
+static inline void RET(Chip8 *chip8)
 {   // TODO
     return;
 }
 
-void JP_Addr(Chip8 *chip8, uint16_t opcode)
+static inline void JP_Addr(Chip8 *chip8, uint16_t opcode)
 {
-    chip8->PC = opcode & 0x0FFF;
+    chip8->PC = decode_nnn(opcode);
     return;
 }
 
-void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
-    uint8_t vx = (opcode & 0x0F00) >> 8;
-    uint8_t byte = opcode & 0x00FF;
+    uint8_t vx = decode_vx(opcode);
+    uint8_t byte = decode_nn(opcode);
     chip8->V[vx] = byte;
     return;
 }
 
-void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
-    uint8_t vx = (opcode & 0x0F00) >> 8;
-    uint8_t byte = opcode & 0x00FF;
+    uint8_t vx = decode_vx(opcode);
+    uint8_t byte = decode_nn(opcode);
     chip8->V[vx] += byte;
     return;
 }
 
-void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
+static inline void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
 {
-    uint16_t addr = opcode & 0x0FFF;
-    chip8->I = addr;
+    chip8->I = decode_nnn(opcode);
     return;
 }
 
-void DRW(Chip8 *chip8, uint16_t opcode)
+static inline void DRW(Chip8 *chip8, uint16_t opcode)
 {
-    uint8_t vx = (opcode & 0x0F00) >> 8;
-    uint8_t vy = (opcode & 0x00F0) >> 4;
-    uint8_t nibble = opcode & 0x000F;
+    uint8_t vx = decode_vx(opcode);
+    uint8_t vy = decode_vy(opcode);
+    uint8_t nibble = decode_n(opcode);
     uint8_t dx = chip8->V[vx] % 64;
     uint8_t dy = chip8->V[vy] % 32;
     uint8_t sb; // 1 byte of a sprite
