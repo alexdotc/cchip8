@@ -6,10 +6,14 @@
 #define FONT_START 0x000
 #define PROG_START 0x200
 
-void SYS_addr();
+void SYS_Addr();
 void CLS(Chip8 *chip8);
 void RET(Chip8 *chip8);
+void DRW(Chip8 *chip8, uint16_t opcode);
+void JP_Addr(Chip8 *chip8, uint16_t opcode);
 void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+void LD_I_Addr(Chip8 *chip, uint16_t opcode);
+void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 
 const uint8_t fonts[80] =
 { 
@@ -77,15 +81,19 @@ int cycle(Chip8 *chip8)
         case 0x0000: switch(opcode & 0x00FF){
 	                 case 0x00E0: CLS(chip8); break;
                          case 0x00EE: RET(chip8); break;
-                         default: SYS_addr(); break;
+                         default: SYS_Addr(); break;
                      } break;
+        case 0x1000: JP_Addr(chip8, opcode); break;
         case 0x6000: LD_Vx_Byte(chip8, opcode); break;
+        case 0x7000: ADD_Vx_Byte(chip8, opcode); break;
+        case 0xA000: LD_I_Addr(chip8, opcode); break;
+        case 0xD000: DRW(chip8, opcode); break;
         default: fprintf(stderr, "cycle(): Unkown opcode: %x\n", opcode); return EXIT_FAILURE;
     }
     return 0;
 }
 
-void SYS_addr()
+void SYS_Addr()
 {
     // deliberately ignored, not useful on a modern interpreter
     return;
@@ -103,8 +111,65 @@ void RET(Chip8 *chip8)
     return;
 }
 
+void JP_Addr(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->PC = opcode & 0x0FFF;
+    return;
+}
+
 void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    uint8_t vx = (opcode & 0x0F00) >> 8;
+    uint8_t byte = opcode & 0x00FF;
+    chip8->V[vx] = byte;
+    return;
+}
+
+void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+{
+    uint8_t vx = (opcode & 0x0F00) >> 8;
+    uint8_t byte = opcode & 0x00FF;
+    chip8->V[vx] += byte;
+    return;
+}
+
+void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
+{
+    uint16_t addr = opcode & 0x0FFF;
+    chip8->I = addr;
+    return;
+}
+
+void DRW(Chip8 *chip8, uint16_t opcode)
+{
+    uint8_t vx = (opcode & 0x0F00) >> 8;
+    uint8_t vy = (opcode & 0x00F0) >> 4;
+    uint8_t nibble = opcode & 0x000F;
+    uint8_t dx = chip8->V[vx] % 64;
+    uint8_t dy = chip8->V[vy] % 32;
+    uint8_t sb; // 1 byte of a sprite
+    uint8_t px;
+    uint8_t *dest;
+    int m;
+
+    chip8->V[0xF] = 0;
+
+    for(uint8_t offset = 0; offset < nibble; ++offset){
+        sb = chip8->mem[chip8->I + offset];
+        m = 0;
+        for(int i = 0; i < 8; i++){
+            dest = (chip8->gfx)+(64*dy + dx);
+            px = (sb >> (7-i)) & 1;
+            if (*dest && px) chip8->V[0xF] = 1; // collision
+            *dest ^= px;
+            dx++;
+            m++;
+            if (dx > 63) break;
+        }
+        dy++;
+        if (dy > 31) break;
+        dx -= m;
+    }
+    chip8->draw_cycle = true;
     return;
 }
