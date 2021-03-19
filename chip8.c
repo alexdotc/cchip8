@@ -15,7 +15,7 @@ void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 void LD_I_Addr(Chip8 *chip, uint16_t opcode);
 void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 
-const uint8_t fonts[80] =
+static const uint8_t fonts[80] =
 { 
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -46,6 +46,7 @@ int load_rom(Chip8 *chip8, const char *path)
     uint16_t len = ftell(f);
     rewind(f);
     fread(chip8->mem+PROG_START, len, 1, f);
+    fclose(f);
 
     return 0;
 }

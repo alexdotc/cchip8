@@ -16,7 +16,10 @@ int main(int argc, char **argv)
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
         printf("SDL: %s", SDL_GetError());
     else{
-        window = SDL_CreateWindow("CChip8", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 64 * SCALE, 32 * SCALE, SDL_WINDOW_SHOWN);
+        window = SDL_CreateWindow("CChip8", SDL_WINDOWPOS_CENTERED, \
+                                            SDL_WINDOWPOS_CENTERED, \
+                                            64 * SCALE, 32 * SCALE, \
+                                            SDL_WINDOW_SHOWN);
         if(window == NULL) printf("SDL: %s", SDL_GetError());
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         if(renderer == NULL) printf("SDL: %s", SDL_GetError());
