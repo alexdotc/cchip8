@@ -18,9 +18,26 @@ static inline void RET(Chip8 *chip8);
 static inline void CALL(Chip8 *chip8, uint16_t opcode);
 static inline void DRW(Chip8 *chip8, uint16_t opcode);
 static inline void JP_Addr(Chip8 *chip8, uint16_t opcode);
+static inline void SE_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline void SNE_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline void SE_Vx_Vy(Chip8 *chip8, uint16_t opcode);
 static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 static inline void LD_I_Addr(Chip8 *chip, uint16_t opcode);
 static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline void LD_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void OR_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void AND_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void XOR_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void RND_Vx_Byte(Chip8 *chip8, uint16_t opcode);
+static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode);
 
 static const uint8_t fonts[80] =
 { 
