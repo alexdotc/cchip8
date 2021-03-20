@@ -15,6 +15,7 @@ static inline uint16_t decode_nnn(uint16_t opcode);
 static inline void SYS_Addr();
 static inline void CLS(Chip8 *chip8);
 static inline void RET(Chip8 *chip8);
+static inline void CALL(Chip8 *chip8, uint16_t opcode);
 static inline void DRW(Chip8 *chip8, uint16_t opcode);
 static inline void JP_Addr(Chip8 *chip8, uint16_t opcode);
 static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode);
@@ -91,6 +92,7 @@ int cycle(Chip8 *chip8)
                          default: SYS_Addr(); break;
                      } break;
         case 0x1000: JP_Addr(chip8, opcode); break;
+        case 0x2000: CALL(chip8, opcode); break;
         case 0x6000: LD_Vx_Byte(chip8, opcode); break;
         case 0x7000: ADD_Vx_Byte(chip8, opcode); break;
         case 0xA000: LD_I_Addr(chip8, opcode); break;
@@ -139,12 +141,22 @@ static inline void CLS(Chip8 *chip8)
 }
 
 static inline void RET(Chip8 *chip8)
-{   // TODO
+{   
+    chip8->SP--; // see comments in CALL
+    chip8->PC = chip8->stack[chip8->SP];
     return;
 }
 
 static inline void JP_Addr(Chip8 *chip8, uint16_t opcode)
 {
+    chip8->PC = decode_nnn(opcode);
+    return;
+}
+
+static inline void CALL(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->stack[chip8->SP] = chip8->PC; // this must be right
+    chip8->SP++; // but these actions are reversed from Cowgod's (?)
     chip8->PC = decode_nnn(opcode);
     return;
 }
