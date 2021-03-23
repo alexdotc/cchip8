@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "chip8.h"
 
 #define FONT_START 0x000
@@ -93,6 +94,8 @@ void reset(Chip8 *chip8)
 
     chip8->draw_cycle = false;
 
+    srand((unsigned int)time(NULL));
+
     return;
 }
 
@@ -127,7 +130,12 @@ int cycle(Chip8 *chip8)
                      case 0x000E: SHL_Vx_Vy(chip8, opcode); break;
                      } break;
         case 0xA000: LD_I_Addr(chip8, opcode); break;
+        case 0xC000: RND_Vx_Byte(chip8, opcode); break;
         case 0xD000: DRW(chip8, opcode); break;
+        case 0xF000: switch(decode_nn(opcode)){
+                     case 0x0007: LD_Vx_DT(chip8, opcode); break;
+                     case 0x0015: LD_DT_Vx(chip8, opcode); break;
+                     } break;
         default: fprintf(stderr, "cycle(): Unkown opcode: %x\n", opcode); return EXIT_FAILURE;
     }
     return 0;
@@ -268,7 +276,7 @@ static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 }
 
 static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
-{
+{   // TODO
     return;
 }
 
@@ -283,13 +291,19 @@ static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 }
 
 static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode)
-{
+{   // TODO
     return;
 }
 
 static inline void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
 {
     chip8->I = decode_nnn(opcode);
+    return;
+}
+
+static inline void RND_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] = (uint8_t)(rand() % 256) & decode_nn(opcode);
     return;
 }
 
@@ -325,5 +339,26 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
         dx -= m;
     }
     chip8->draw_cycle = true;
+    return;
+}
+
+static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode)
+{   // TODO
+    return;
+}
+static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
+{   // TODO
+    return;
+}
+
+static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] = chip8->DT;
+    return;
+}
+
+static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->DT = chip8->V[decode_vx(opcode)];
     return;
 }
