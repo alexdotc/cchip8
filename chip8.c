@@ -103,15 +103,29 @@ int cycle(Chip8 *chip8)
     chip8->draw_cycle = false;
 
     switch(opcode & 0xF000){
-        case 0x0000: switch(opcode & 0x00FF){
+        case 0x0000: switch(decode_nn(opcode)){
 	                 case 0x00E0: CLS(chip8); break;
                          case 0x00EE: RET(chip8); break;
                          default: SYS_Addr(); break;
                      } break;
         case 0x1000: JP_Addr(chip8, opcode); break;
         case 0x2000: CALL(chip8, opcode); break;
+        case 0x3000: SE_Vx_Byte(chip8, opcode); break;
+        case 0x4000: SNE_Vx_Byte(chip8, opcode); break;
+        case 0x5000: SE_Vx_Vy(chip8, opcode); break;
         case 0x6000: LD_Vx_Byte(chip8, opcode); break;
         case 0x7000: ADD_Vx_Byte(chip8, opcode); break;
+        case 0x8000: switch(decode_n(opcode)){
+                     case 0x0000: LD_Vx_Vy(chip8, opcode); break;
+                     case 0x0001: OR_Vx_Vy(chip8, opcode); break;
+                     case 0x0002: AND_Vx_Vy(chip8, opcode); break;
+                     case 0x0003: XOR_Vx_Vy(chip8, opcode); break;
+                     case 0x0004: ADD_Vx_Vy(chip8, opcode); break;
+                     case 0x0005: SUB_Vx_Vy(chip8, opcode); break;
+                     case 0x0006: SHR_Vx_Vy(chip8, opcode); break;
+                     case 0x0007: SUBN_Vx_Vy(chip8, opcode); break;
+                     case 0x000E: SHL_Vx_Vy(chip8, opcode); break;
+                     } break;
         case 0xA000: LD_I_Addr(chip8, opcode); break;
         case 0xD000: DRW(chip8, opcode); break;
         default: fprintf(stderr, "cycle(): Unkown opcode: %x\n", opcode); return EXIT_FAILURE;
@@ -178,19 +192,98 @@ static inline void CALL(Chip8 *chip8, uint16_t opcode)
     return;
 }
 
+static inline void SE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+{
+    if(chip8->V[decode_vx(opcode)] == decode_nn(opcode)) chip8->PC += 2;
+    return;
+}
+
+static inline void SNE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
+{
+    if(chip8->V[decode_vx(opcode)] == decode_nn(opcode)) chip8->PC += 2;
+    return;
+}
+
+static inline void SE_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    if(chip8->V[decode_vx(opcode)] == chip8->V[decode_vy(opcode)]) chip8->PC += 2;
+    return;
+}
+
 static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
-    uint8_t vx = decode_vx(opcode);
-    uint8_t byte = decode_nn(opcode);
-    chip8->V[vx] = byte;
+    chip8->V[decode_vx(opcode)] = decode_nn(opcode);
     return;
 }
 
 static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
+    chip8->V[decode_vx(opcode)] += decode_nn(opcode);
+    return;
+}
+
+static inline void LD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] = chip8->V[decode_vy(opcode)];
+    return;
+}
+
+static inline void OR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] |= chip8->V[decode_vy(opcode)];
+    return;
+}
+
+static inline void AND_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] &= chip8->V[decode_vy(opcode)];
+    return;
+}
+
+static inline void XOR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->V[decode_vx(opcode)] ^= chip8->V[decode_vy(opcode)];
+    return;
+}
+
+static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
     uint8_t vx = decode_vx(opcode);
-    uint8_t byte = decode_nn(opcode);
-    chip8->V[vx] += byte;
+    uint8_t vy = decode_vy(opcode);
+    if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; //?
+    else chip8->V[0xF] = 0; // ? 
+    chip8->V[vx] -= chip8->V[vy];
+    return;
+    return;
+}
+
+static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    uint8_t vx = decode_vx(opcode);
+    uint8_t vy = decode_vy(opcode);
+    if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; // ?
+    else chip8->V[0xF] = 0; // ?
+    chip8->V[vx] -= chip8->V[vy];
+    return;
+}
+
+static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    return;
+}
+
+static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    uint8_t vx = decode_vx(opcode);
+    uint8_t vy = decode_vy(opcode);
+    if(chip8->V[vy] > chip8->V[vx]) chip8->V[0xF] = 1; // ?
+    else chip8->V[0xF] = 0; // ?
+    chip8->V[vx] = chip8->V[vy] - chip8->V[vx];
+    return;
+}
+
+static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
     return;
 }
 
@@ -221,6 +314,7 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
             dest = (chip8->gfx)+(64*dy + dx);
             px = (sb >> (7-i)) & 1;
             if (*dest && px) chip8->V[0xF] = 1; // collision
+            else chip8->V[0xF] = 0;
             *dest ^= px;
             dx++;
             m++;
