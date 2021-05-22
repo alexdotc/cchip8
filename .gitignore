@@ -1,3 +1,6 @@
+# Assembler
+*.s
+
 # Prerequisites
 *.d
 

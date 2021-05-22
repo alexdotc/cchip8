@@ -6,3 +6,6 @@ chip8: core.c chip8.c
 
 debug: core.c chip8.c
 	$(CC) -o chip8.out core.c chip8.c $(CFLAGS) -g
+
+assembly: core.c chip8.c
+	$(CC) -S core.c chip8.c $(CFLAGS)
