@@ -34,11 +34,21 @@ static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode);
 static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode);
 static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode);
 static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode);
+static inline void SNE_Vx_Vy(Chip8 *chip8, uint16_t opcode);
 static inline void RND_Vx_Byte(Chip8 *chip8, uint16_t opcode);
 static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode);
 static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void JP_V0_Addr(Chip8 *chip8, uint16_t opcode);
 static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode);
 static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode);
+static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode);
+static inline void LD_ST_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_ArrayI_Vx(Chip8 *chip8, uint16_t opcode);
+static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode);
+
 
 static const uint8_t fonts[80] =
 { 
@@ -106,10 +116,10 @@ int cycle(Chip8 *chip8)
     chip8->draw_cycle = false;
 
     switch(opcode & 0xF000){
-        case 0x0000: switch(decode_nn(opcode)){
+        case 0x0000: switch(decode_nnn(opcode)){
 	                 case 0x00E0: CLS(chip8); break;
-                         case 0x00EE: RET(chip8); break;
-                         default: SYS_Addr(); break;
+                     case 0x00EE: RET(chip8); break;
+                     default: SYS_Addr(); break;
                      } break;
         case 0x1000: JP_Addr(chip8, opcode); break;
         case 0x2000: CALL(chip8, opcode); break;
@@ -129,9 +139,15 @@ int cycle(Chip8 *chip8)
                      case 0x0007: SUBN_Vx_Vy(chip8, opcode); break;
                      case 0x000E: SHL_Vx_Vy(chip8, opcode); break;
                      } break;
+        case 0x9000: SNE_Vx_Vy(chip8, opcode); break;
         case 0xA000: LD_I_Addr(chip8, opcode); break;
+        case 0xB000: JP_V0_Addr(chip8, opcode); break;
         case 0xC000: RND_Vx_Byte(chip8, opcode); break;
         case 0xD000: DRW(chip8, opcode); break;
+        case 0xE000: switch(decode_nn(opcode)){
+                     case 0x009E: LD_Vx_Vy(chip8, opcode); break;
+                     case 0x00A1: OR_Vx_Vy(chip8, opcode); break;
+                     } break;
         case 0xF000: switch(decode_nn(opcode)){
                      case 0x0007: LD_Vx_DT(chip8, opcode); break;
                      case 0x0015: LD_DT_Vx(chip8, opcode); break;
@@ -208,13 +224,19 @@ static inline void SE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 
 static inline void SNE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
-    if(chip8->V[decode_vx(opcode)] == decode_nn(opcode)) chip8->PC += 2;
+    if(chip8->V[decode_vx(opcode)] != decode_nn(opcode)) chip8->PC += 2;
     return;
 }
 
 static inline void SE_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     if(chip8->V[decode_vx(opcode)] == chip8->V[decode_vy(opcode)]) chip8->PC += 2;
+    return;
+}
+
+static inline void SNE_Vx_Vy(Chip8 *chip8, uint16_t opcode)
+{
+    if(chip8->V[decode_vx(opcode)] != chip8->V[decode_vy(opcode)]) chip8->PC += 2;
     return;
 }
 
@@ -227,6 +249,7 @@ static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] += decode_nn(opcode);
+    // TODO deal with overflow
     return;
 }
 
@@ -261,7 +284,7 @@ static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; //?
     else chip8->V[0xF] = 0; // ? 
     chip8->V[vx] -= chip8->V[vy];
-    return;
+    // TODO deal with overflow or double check this
     return;
 }
 
@@ -272,11 +295,15 @@ static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; // ?
     else chip8->V[0xF] = 0; // ?
     chip8->V[vx] -= chip8->V[vy];
+    // TODO deal with overflow or double check this
     return;
 }
 
 static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
-{   // TODO
+{   
+    uint8_t vx = decode_vx(opcode);
+    chip8->V[0xF] = 1 & chip8->V[vx];
+    chip8->V[vx] >>= 1;
     return;
 }
 
@@ -291,7 +318,10 @@ static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 }
 
 static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode)
-{   // TODO
+{   uint8_t vx = decode_vx(opcode);
+    chip8->V[0xF] = 1 & chip8->V[vx];
+    chip8->V[vx] <<= 1;
+    // TODO overflow? no?
     return;
 }
 
@@ -351,14 +381,62 @@ static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
     return;
 }
 
-static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
+static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = chip8->DT;
     return;
 }
 
-static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
+static inline void LD_ST_Vx(Chip8 *chip8, uint16_t opcode)
+{
+    chip8->ST = chip8->V[decode_vx(opcode)];
+    return;
+}
+
+static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->DT = chip8->V[decode_vx(opcode)];
+    return;
+}
+
+static inline void LD_ArrayI_Vx(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
+    return;
+}
+
+static inline void JP_V0_Addr(Chip8 *chip8, uint16_t opcode)
+{
+    // TODO
     return;
 }
