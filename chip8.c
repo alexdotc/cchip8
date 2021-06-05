@@ -145,12 +145,19 @@ int cycle(Chip8 *chip8)
         case 0xC000: RND_Vx_Byte(chip8, opcode); break;
         case 0xD000: DRW(chip8, opcode); break;
         case 0xE000: switch(decode_nn(opcode)){
-                     case 0x009E: LD_Vx_Vy(chip8, opcode); break;
-                     case 0x00A1: OR_Vx_Vy(chip8, opcode); break;
+                     case 0x009E: SKP_Vx(chip8, opcode); break;
+                     case 0x00A1: SKNP_Vx(chip8, opcode); break;
                      } break;
         case 0xF000: switch(decode_nn(opcode)){
                      case 0x0007: LD_Vx_DT(chip8, opcode); break;
+                     case 0x000A: LD_Vx_Key(chip8, opcode); break;
                      case 0x0015: LD_DT_Vx(chip8, opcode); break;
+                     case 0x0018: LD_ST_Vx(chip8, opcode); break;
+                     case 0x001E: ADD_I_Vx(chip8, opcode); break;
+                     case 0x0029: LD_I_FontVx(chip8, opcode); break;
+                     case 0x0033: LD_I_BCDVx(chip8, opcode); break;
+                     case 0x0055: LD_ArrayI_Vx(chip8, opcode); break;
+                     case 0x0066: LD_ArrayVx_I(chip8, opcode); break;
                      } break;
         default: fprintf(stderr, "cycle(): Unkown opcode: %x\n", opcode); return EXIT_FAILURE;
     }
@@ -373,11 +380,13 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
 }
 
 static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode)
-{   // TODO
+{   
+    if (chip8->key[decode_vx(opcode)]) chip8->PC += 2;
     return;
 }
 static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
-{   // TODO
+{   
+    if ( ! chip8->key[decode_vx(opcode)]) chip8->PC += 2;
     return;
 }
 
@@ -401,42 +410,43 @@ static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 
 static inline void LD_ArrayI_Vx(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    memcpy(chip8->mem + chip8->I, chip8->V, decode_vx(opcode));
     return;
 }
 
 static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    memcpy(chip8->V, chip8->mem + chip8->I, decode_vx(opcode));
     return;
 }
 
 static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    chip8->I = FONT_START + 5*decode_vx(opcode);
     return;
 }
 
 static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
 {
     // TODO
-    return;
+    fprintf(stderr, "Opcode not implemented: %x\n", opcode); return EXIT_FAILURE;
 }
 
 static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    chip8->I += decode_vx(opcode);
+    // TODO deal with overflow
     return;
 }
 
 static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode)
 {
     // TODO
-    return;
+    fprintf(stderr, "Opcode not implemented: %x\n", opcode); return EXIT_FAILURE;
 }
 
 static inline void JP_V0_Addr(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
+    chip8->PC = decode_nnn(opcode) + chip8->V[0];
     return;
 }
