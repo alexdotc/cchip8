@@ -44,7 +44,7 @@ int main(int argc, char *const argv[])
     }
     load_rom(&chip8, argv[1]);
     uint32_t pixels[GFXSIZE];
-    uint32_t ctr = 0;
+    uint64_t ctr = 0; // shouldn't overflow at intended range of speeds
 
     while(ctr += 1)
     {
@@ -69,7 +69,6 @@ int main(int argc, char *const argv[])
                 goto quit;
             }
         }
-        if (ctr >= UINT32_MAX - 40) ctr = 0; // reset to avoid overflow
         nanosleep((const struct timespec[]){{0, 1000000000L/(long)SPEED}}, NULL);
     }
 
