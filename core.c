@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL.h>
 #include "chip8.h"
 
@@ -7,7 +8,7 @@
 #define STACKSIZE 16
 #define SCALE 20
 
-int main(int argc, char **argv)
+int main(int argc, char *const argv[])
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -33,7 +34,11 @@ int main(int argc, char **argv)
     Chip8 chip8 = { MEMSIZE, GFXSIZE, STACKSIZE };
 
     reset(&chip8);
-    load_rom(&chip8, "roms/ibm.ch8");
+    if (argc < 2) {
+        fprintf(stderr, "No ROM provided. Exiting...\n");
+        return EXIT_FAILURE;
+    }
+    load_rom(&chip8, argv[1]);
     uint32_t pixels[GFXSIZE];
 
     while(1)
