@@ -10,7 +10,7 @@
 #define GFXSIZE 2048
 #define STACKSIZE 16
 #define SCALE 20
-#define SPEED 500L // 500hz
+#define SPEED 600 // hz
 
 int main(int argc, char *const argv[])
 {
@@ -70,7 +70,7 @@ int main(int argc, char *const argv[])
             }
         }
         if (ctr >= UINT32_MAX - 40) ctr = 0; // reset to avoid overflow
-        nanosleep((const struct timespec[]){{0, 1000000000L/SPEED}}, NULL);
+        nanosleep((const struct timespec[]){{0, 1000000000L/(long)SPEED}}, NULL);
     }
 
     quit:
