@@ -157,7 +157,7 @@ int cycle(Chip8 *chip8)
                      case 0x0029: LD_I_FontVx(chip8, opcode); break;
                      case 0x0033: LD_I_BCDVx(chip8, opcode); break;
                      case 0x0055: LD_ArrayI_Vx(chip8, opcode); break;
-                     case 0x0066: LD_ArrayVx_I(chip8, opcode); break;
+                     case 0x0065: LD_ArrayVx_I(chip8, opcode); break;
                      } break;
         default: fprintf(stderr, "cycle(): Unkown opcode: %x\n", opcode); return EXIT_FAILURE;
     }
@@ -410,13 +410,13 @@ static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 
 static inline void LD_ArrayI_Vx(Chip8 *chip8, uint16_t opcode)
 {
-    memcpy(chip8->mem + chip8->I, chip8->V, decode_vx(opcode));
+    memcpy(chip8->mem + chip8->I, chip8->V, decode_vx(opcode) + 1);
     return;
 }
 
 static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode)
 {
-    memcpy(chip8->V, chip8->mem + chip8->I, decode_vx(opcode));
+    memcpy(chip8->V, chip8->mem + chip8->I, decode_vx(opcode) + 1);
     return;
 }
 
@@ -428,8 +428,12 @@ static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode)
 
 static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
-    fprintf(stderr, "Opcode not implemented: %x\n", opcode); return EXIT_FAILURE;
+    uint16_t I = chip8->I;
+    uint8_t vx = chip8->V[decode_vx(opcode)];
+    chip8->mem[I] = vx / 100;
+    chip8->mem[I+1] = (vx / 10) % 10;
+    chip8->mem[I+2] = (vx % 100) % 10;
+    return;
 }
 
 static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
