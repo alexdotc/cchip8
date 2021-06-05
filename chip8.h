@@ -27,5 +27,6 @@ typedef struct Chip8
 
 int cycle(Chip8 *chip8);
 void reset(Chip8 *chip8);
+void dec_timers(Chip8 *chip8);
 void keypress(Chip8 *chip8);
 int load_rom(Chip8 *chip8, const char *path);

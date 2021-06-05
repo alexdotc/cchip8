@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <SDL.h>
+#include <SDL_audio.h>
+
 #include "chip8.h"
 
 #define MEMSIZE 4096
 #define GFXSIZE 2048
 #define STACKSIZE 16
 #define SCALE 20
+#define SPEED 500L // 500hz
 
 int main(int argc, char *const argv[])
 {
@@ -40,8 +44,9 @@ int main(int argc, char *const argv[])
     }
     load_rom(&chip8, argv[1]);
     uint32_t pixels[GFXSIZE];
+    uint32_t ctr = 0;
 
-    while(1)
+    while(ctr += 1)
     {
         cycle(&chip8);
         if (chip8.draw_cycle){ // opcode updated screen
@@ -53,6 +58,8 @@ int main(int argc, char *const argv[])
             SDL_RenderCopy(renderer, texture, NULL, NULL);
             SDL_RenderPresent(renderer);
         }
+
+        if ( ! (ctr % (SPEED/60))) dec_timers(&chip8); // approximate timing
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT){
                 SDL_DestroyTexture(texture);
@@ -62,6 +69,8 @@ int main(int argc, char *const argv[])
                 goto quit;
             }
         }
+        if (ctr >= UINT32_MAX - 40) ctr = 0; // reset to avoid overflow
+        nanosleep((const struct timespec[]){{0, 1000000000L/SPEED}}, NULL);
     }
 
     quit:

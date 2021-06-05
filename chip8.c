@@ -109,6 +109,13 @@ void reset(Chip8 *chip8)
     return;
 }
 
+void dec_timers(Chip8 *chip8)
+{
+    if (chip8->DT) --chip8->DT;
+    if (chip8->ST) --chip8->ST;
+    return;
+}
+
 int cycle(Chip8 *chip8)
 {
     uint16_t opcode = chip8->mem[chip8->PC] << 8 | chip8->mem[chip8->PC+1];
