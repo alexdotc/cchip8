@@ -68,6 +68,15 @@ int main(int argc, char *const argv[])
                 SDL_Quit();
                 goto quit;
             }
+            if (e.type == SDL_KEYDOWN){
+                switch(e.key.keysym.scancode){
+		    case SDL_SCANCODE_2: break; break;
+                    case SDL_SCANCODE_3: break;
+                    case SDL_SCANCODE_4: break;
+                    case SDL_SCANCODE_5: break;
+                    default: break;
+                }
+	    }
         }
         nanosleep((const struct timespec[]){{0, 1000000000L/(long)SPEED}}, NULL);
     }

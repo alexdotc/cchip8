@@ -452,8 +452,13 @@ static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
 
 static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode)
 {
-    // TODO
-    fprintf(stderr, "Opcode not implemented: %x\n", opcode); return EXIT_FAILURE;
+    for(int i = 0; i < 16; ++i)
+        if (chip8->key[i]){
+            chip8->V[decode_vx(opcode)] = i;
+            return;
+        }
+    chip8->PC -= 2; // block until we have a keypress
+    return;
 }
 
 static inline void JP_V0_Addr(Chip8 *chip8, uint16_t opcode)
