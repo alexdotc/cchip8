@@ -13,10 +13,10 @@
 #define SPEED 600 // hz
 
 static int keymap[16] = {
+    SDL_SCANCODE_1,
     SDL_SCANCODE_2,
     SDL_SCANCODE_3,
     SDL_SCANCODE_4,
-    SDL_SCANCODE_5,
     SDL_SCANCODE_Q,
     SDL_SCANCODE_W,
     SDL_SCANCODE_E,
