@@ -12,6 +12,25 @@
 #define SCALE 20
 #define SPEED 600 // hz
 
+static int keymap[16] = {
+    SDL_SCANCODE_2,
+    SDL_SCANCODE_3,
+    SDL_SCANCODE_4,
+    SDL_SCANCODE_5,
+    SDL_SCANCODE_Q,
+    SDL_SCANCODE_W,
+    SDL_SCANCODE_E,
+    SDL_SCANCODE_R,
+    SDL_SCANCODE_A,
+    SDL_SCANCODE_S,
+    SDL_SCANCODE_D,
+    SDL_SCANCODE_F,
+    SDL_SCANCODE_Z,
+    SDL_SCANCODE_X,
+    SDL_SCANCODE_C,
+    SDL_SCANCODE_V,
+};
+
 int main(int argc, char *const argv[])
 {
     SDL_Window *window = NULL;
@@ -58,6 +77,9 @@ int main(int argc, char *const argv[])
             SDL_RenderCopy(renderer, texture, NULL, NULL);
             SDL_RenderPresent(renderer);
         }
+        if (chip.ST > 0){
+            // TODO audio
+        }
 
         if ( ! (ctr % (SPEED/60))) dec_timers(&chip8); // approximate timing
         while (SDL_PollEvent(&e)) {
@@ -69,14 +91,19 @@ int main(int argc, char *const argv[])
                 goto quit;
             }
             if (e.type == SDL_KEYDOWN){
-                switch(e.key.keysym.scancode){
-		    case SDL_SCANCODE_2: break; break;
-                    case SDL_SCANCODE_3: break;
-                    case SDL_SCANCODE_4: break;
-                    case SDL_SCANCODE_5: break;
-                    default: break;
+                for(int i = 0; i < 16; ++i){
+                    if (keymap[i] == e.key.keysym.scancode)
+                        chip8.key[i] = 1;;
                 }
-	    }
+
+	        }
+            if (e.type == SDL_KEYUP){
+                for(int i = 0; i < 16; ++i){
+                    if (keymap[i] == e.key.keysym.scancode)
+                        chip8.key[i] = 0;
+                }
+
+	        }
         }
         nanosleep((const struct timespec[]){{0, 1000000000L/(long)SPEED}}, NULL);
     }
