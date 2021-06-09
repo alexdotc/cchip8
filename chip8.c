@@ -372,7 +372,6 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
             dest = (chip8->gfx)+(64*dy + dx);
             px = (sb >> (7-i)) & 1;
             if (*dest && px) chip8->V[0xF] = 1; // collision
-            else chip8->V[0xF] = 0;
             *dest ^= px;
             dx++;
             m++;

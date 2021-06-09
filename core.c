@@ -77,9 +77,10 @@ int main(int argc, char *const argv[])
             SDL_RenderCopy(renderer, texture, NULL, NULL);
             SDL_RenderPresent(renderer);
         }
-        if (chip.ST > 0){
-            // TODO audio
+        if (chip8.ST > 0){
+            // TODO audio.play()
         }
+        else // audio.stop() 
 
         if ( ! (ctr % (SPEED/60))) dec_timers(&chip8); // approximate timing
         while (SDL_PollEvent(&e)) {
