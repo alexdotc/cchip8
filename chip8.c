@@ -387,12 +387,12 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
 
 static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode)
 {   
-    if (chip8->key[decode_vx(opcode)]) chip8->PC += 2;
+    if (chip8->key[chip8->V[decode_vx(opcode)]]) chip8->PC += 2;
     return;
 }
 static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
 {   
-    if ( ! chip8->key[decode_vx(opcode)]) chip8->PC += 2;
+    if ( ! chip8->key[chip8->V[decode_vx(opcode)]]) chip8->PC += 2;
     return;
 }
 
@@ -445,7 +445,7 @@ static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
 
 static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
 {
-    chip8->I += decode_vx(opcode);
+    chip8->I += chip8->V[decode_vx(opcode)];
     // TODO deal with overflow
     return;
 }
