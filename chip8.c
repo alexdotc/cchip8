@@ -262,8 +262,8 @@ static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 
 static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
+    // this instruction does not affect carry flag
     chip8->V[decode_vx(opcode)] += decode_nn(opcode);
-    // TODO deal with overflow
     return;
 }
 
@@ -295,10 +295,10 @@ static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     uint8_t vx = decode_vx(opcode);
     uint8_t vy = decode_vy(opcode);
-    if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; //?
-    else chip8->V[0xF] = 0; // ? 
-    chip8->V[vx] -= chip8->V[vy];
-    // TODO deal with overflow or double check this
+    if(((uint16_t)chip8->V[vx] + (uint16_t)chip8->V[vy]) > 255) 
+        chip8->V[0xF] = 1; // overflow
+    else chip8->V[0xF] = 0;
+    chip8->V[vx] += chip8->V[vy];
     return;
 }
 
@@ -309,7 +309,6 @@ static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; // ?
     else chip8->V[0xF] = 0; // ?
     chip8->V[vx] -= chip8->V[vy];
-    // TODO deal with overflow or double check this
     return;
 }
 
