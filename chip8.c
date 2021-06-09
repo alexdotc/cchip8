@@ -347,6 +347,7 @@ static inline void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
 static inline void RND_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = (uint8_t)(rand() % 256) & decode_nn(opcode);
+    printf("Random: %d\n", chip8->V[decode_vx(opcode)]);
     return;
 }
 
@@ -427,7 +428,8 @@ static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode)
 
 static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode)
 {
-    chip8->I = FONT_START + 5*decode_vx(opcode);
+    chip8->I = FONT_START + 5*chip8->V[decode_vx(opcode)];
+    printf("%x\n", chip8->I);
     return;
 }
 
