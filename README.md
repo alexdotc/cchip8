@@ -1,14 +1,11 @@
 # cchip8
-A CHIP-8 interpreter in C. SDL2 as a graphics frontend with possible option to use curses down the line. Mar2021 WIP
+A CHIP-8 interpreter in C. SDL2 as a graphics frontend. All the basic functionality is there with a handful of games tested.
 
 ## Instructions
     make
-    ./chip8.out
+    ./chip8.out /path/to/your/rom
     
-## On the TODO list
+## Possible TODOs
 
-- Finish implementing opcodes
-- Sound/delay timer and CPU clock timing
-- SDL Keyboard input
-- SDL Audio
-- Getopt for ROM selection, window scaling, etc.
+- Separate out ome of the boilerplate SDL code. Should have a platform layer
+- Getopt or some options lib for more command line options
