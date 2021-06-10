@@ -398,7 +398,6 @@ static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
 static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = chip8->DT;
-    printf("DT is %d\n", chip8->DT);
     return;
 }
 
@@ -411,7 +410,6 @@ static inline void LD_ST_Vx(Chip8 *chip8, uint16_t opcode)
 static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->DT = chip8->V[decode_vx(opcode)];
-    printf("Set DT to %d\n", chip8->DT);
     return;
 }
 
