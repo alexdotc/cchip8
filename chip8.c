@@ -111,6 +111,7 @@ void reset(Chip8 *chip8)
 void dec_timers(Chip8 *chip8)
 {
     if (chip8->DT) --chip8->DT;
+    printf("DT %d\n", chip8->DT);
     if (chip8->ST) --chip8->ST;
     return;
 }
@@ -155,9 +156,9 @@ int cycle(Chip8 *chip8)
                      case 0x00A1: SKNP_Vx(chip8, opcode); break;
                      } break;
         case 0xF000: switch(decode_nn(opcode)){
-                     case 0x0007: LD_DT_Vx(chip8, opcode); break;
+                     case 0x0007: LD_Vx_DT(chip8, opcode); break;
                      case 0x000A: LD_Vx_Key(chip8, opcode); break;
-                     case 0x0015: LD_Vx_DT(chip8, opcode); break;
+                     case 0x0015: LD_DT_Vx(chip8, opcode); break;
                      case 0x0018: LD_ST_Vx(chip8, opcode); break;
                      case 0x001E: ADD_I_Vx(chip8, opcode); break;
                      case 0x0029: LD_I_FontVx(chip8, opcode); break;
@@ -397,6 +398,7 @@ static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
 static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = chip8->DT;
+    printf("DT is %d\n", chip8->DT);
     return;
 }
 
@@ -409,6 +411,7 @@ static inline void LD_ST_Vx(Chip8 *chip8, uint16_t opcode)
 static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->DT = chip8->V[decode_vx(opcode)];
+    printf("Set DT to %d\n", chip8->DT);
     return;
 }
 

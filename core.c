@@ -78,7 +78,7 @@ int main(int argc, char *const argv[])
         if (chip8.ST > 0){
             // TODO audio.play()
         }
-        else // audio.stop() 
+        // WOW else; // audio.stop() 
 
         if ( ! (ctr % (SPEED/60))) dec_timers(&chip8); // approximate timing
         while (SDL_PollEvent(&e)) {
