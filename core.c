@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <SDL.h>
-#include <SDL_audio.h>
 
 #include "chip8.h"
 

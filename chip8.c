@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "chip8.h"
 
 #define FONT_START 0x000
@@ -156,9 +155,9 @@ int cycle(Chip8 *chip8)
                      case 0x00A1: SKNP_Vx(chip8, opcode); break;
                      } break;
         case 0xF000: switch(decode_nn(opcode)){
-                     case 0x0007: LD_Vx_DT(chip8, opcode); break;
+                     case 0x0007: LD_DT_Vx(chip8, opcode); break;
                      case 0x000A: LD_Vx_Key(chip8, opcode); break;
-                     case 0x0015: LD_DT_Vx(chip8, opcode); break;
+                     case 0x0015: LD_Vx_DT(chip8, opcode); break;
                      case 0x0018: LD_ST_Vx(chip8, opcode); break;
                      case 0x001E: ADD_I_Vx(chip8, opcode); break;
                      case 0x0029: LD_I_FontVx(chip8, opcode); break;
