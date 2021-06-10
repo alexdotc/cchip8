@@ -111,7 +111,6 @@ void reset(Chip8 *chip8)
 void dec_timers(Chip8 *chip8)
 {
     if (chip8->DT) --chip8->DT;
-    printf("DT %d\n", chip8->DT);
     if (chip8->ST) --chip8->ST;
     return;
 }

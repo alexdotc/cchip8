@@ -7,7 +7,10 @@
 #define MEMSIZE 4096
 #define GFXSIZE 2048
 #define STACKSIZE 16
-#define SCALE 20
+
+#define SCALE 20 // 64x32 multiplier
+#define INITIAL_AUDIO_CACHE 60 // seconds
+#define AUDIO_CACHE 5 // seconds
 #define SPEED 600 // hz
 
 static int keymap[16] = {
@@ -50,9 +53,25 @@ int main(int argc, char *const argv[])
                     SDL_TEXTUREACCESS_STATIC, 64, 32);
         if(texture == NULL) printf("SDL: %s", SDL_GetError());
     }
-    // set up input
+    SDL_AudioDeviceID audio_dev;
+    SDL_AudioSpec audio_spec;
+    SDL_zero(audio_spec);
+    audio_spec.freq = 44100;
+    audio_spec.format = AUDIO_S16SYS;
+    audio_spec.channels = 1;
+    audio_spec.samples = 1024;
 
     Chip8 chip8 = { MEMSIZE, GFXSIZE, STACKSIZE };
+
+    audio_dev = SDL_OpenAudioDevice(
+        NULL, 0, &audio_spec, NULL, 0);
+
+    float x = 0.0;
+    for (int i = 0; i < audio_spec.freq * INITIAL_AUDIO_CACHE; i++) {
+        x += 0.01;
+        int sinwave_sample = sin(x * 4) * 5000;
+        SDL_QueueAudio(audio_dev, &sinwave_sample, 2);
+    }
 
     reset(&chip8);
     if (argc < 2) {
@@ -75,16 +94,25 @@ int main(int argc, char *const argv[])
             SDL_RenderCopy(renderer, texture, NULL, NULL);
             SDL_RenderPresent(renderer);
         }
-        if (chip8.ST > 0){
-            // TODO audio.play()
+
+        if (SDL_GetQueuedAudioSize(audio_dev) < audio_spec.freq){
+            printf("Queueing more audio...\n");
+            x = 0.0;
+            for (int i = 0; i < audio_spec.freq * AUDIO_CACHE; i++) {
+                x += 0.01;
+                int sinwave_sample = sin(x * 4) * 5000;
+                SDL_QueueAudio(audio_dev, &sinwave_sample, 2);
+            }
         }
-        // WOW else; // audio.stop() 
+        if (chip8.ST > 0) SDL_PauseAudioDevice(audio_dev, 0);
+        else SDL_PauseAudioDevice(audio_dev, 1);
 
         if ( ! (ctr % (SPEED/60))) dec_timers(&chip8); // approximate timing
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT){
                 SDL_DestroyTexture(texture);
                 SDL_DestroyRenderer(renderer);
+                SDL_CloseAudioDevice(audio_dev);
                 SDL_DestroyWindow(window);
                 SDL_Quit();
                 goto quit;
