@@ -1,6 +1,12 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+
+#define MEMSIZE 4096
+#define GFXSIZE 2048
+#define STACKSIZE 16
 
 typedef struct Chip8
 {

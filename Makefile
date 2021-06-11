@@ -1,11 +1,11 @@
 CC=gcc
-CFLAGS=$(shell sdl2-config --cflags) -lSDL2 -lm -std=c11 -Wall -O2
+CFLAGS=$(shell sdl2-config --cflags) -lSDL2 -lm -std=c11 -Wall
 
-chip8: core.c chip8.c
-	$(CC) -o chip8.out core.c chip8.c $(CFLAGS)
+chip8: core.c chip8.c platform.c
+	$(CC) -o chip8.out core.c chip8.c platform.c $(CFLAGS)
 
-debug: core.c chip8.c
-	$(CC) -o chip8.out core.c chip8.c $(CFLAGS) -g
+debug: core.c chip8.c platform.c
+	$(CC) -o chip8.out core.c chip8.c platform.c $(CFLAGS) -g
 
-assembly: core.c chip8.c
-	$(CC) -S core.c chip8.c $(CFLAGS)
+assembly: core.c chip8.c platform.c
+	$(CC) -S core.c chip8.c platform.c $(CFLAGS)
