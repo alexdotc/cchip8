@@ -7,7 +7,7 @@ int main(int argc, char *const argv[])
 {
     init_platform();
 
-    Chip8 chip8 = { MEMSIZE, GFXSIZE, STACKSIZE };
+    Chip8 chip8;
 
     reset(&chip8);
     if (argc < 2) {
