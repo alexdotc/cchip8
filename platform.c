@@ -89,7 +89,7 @@ int init_platform()
 int update_platform(Chip8 *chip8)
 {
     if (chip8->draw_cycle)
-        draw_frame(&chip8); // opcode updated screen
+        draw_frame(chip8); // opcode updated screen
 
     if (SDL_GetQueuedAudioSize(audio_dev) < audio_spec.freq)
         queue_audio(); // buffer more audio
@@ -99,7 +99,7 @@ int update_platform(Chip8 *chip8)
     else
         pause_audio();
 
-    return get_input(&chip8);   
+    return get_input(chip8);   
 }
 
 static void draw_frame(Chip8 *chip8)
