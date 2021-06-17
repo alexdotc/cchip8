@@ -91,10 +91,10 @@ void reset(Chip8 *chip8)
     chip8->DT = 0;
     chip8->DT = 0;
 
-    memset(chip8->mem, 0, MEMSIZE);
-    memset(chip8->gfx, 0, GFXSIZE);
+    memset(chip8->mem, 0, chip8->memsize);
+    memset(chip8->gfx, 0, chip8->gfxsize);
     memset(chip8->key, 0, 16);
-    memset(chip8->stack, 0, STACKSIZE*sizeof(uint16_t));
+    memset(chip8->stack, 0, chip8->stacksize*sizeof(uint16_t));
     memset(chip8->V, 0, 16*sizeof(uint16_t));
 
     memcpy(chip8->mem+FONT_START, fonts, sizeof(fonts));
@@ -201,7 +201,7 @@ static inline void SYS_Addr()
 
 static inline void CLS(Chip8 *chip8)
 {
-    memset(chip8->gfx, 0, GFXSIZE);
+    memset(chip8->gfx, 0, chip8->gfxsize);
     chip8->draw_cycle = true;
     return;
 }
