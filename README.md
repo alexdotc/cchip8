@@ -13,9 +13,9 @@ A CHIP-8 interpreter in C. SDL2 as a graphics frontend. All the basic functional
 ## Options
 
 - `-x` to set the window scale to a 64x32 multiple (default: 20)
-- `-s` to set the CPU frequency (default: 600hz)
+- `-s` to set the CPU frequency in hz (default: 600)
 
 ## Credits
 
-[Cowgod's CHIP-8 spec/reference][1]: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
-[Intro to Emulators][2]: https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
+[Cowgod's CHIP-8 spec/reference][http://devernay.free.fr/hacks/chip8/C8TECH10.HTM] 
+[Intro to Emulators][https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/]
