@@ -10,8 +10,8 @@
 static inline void play_audio();
 static inline void pause_audio();
 static inline void queue_audio();
-static void draw_frame();
-static int get_input();
+static inline void draw_frame(Chip8 *chip8);
+static inline int get_input(Chip8 *chip8);
 
 static int keymap[16] = {
     SDL_SCANCODE_1,
