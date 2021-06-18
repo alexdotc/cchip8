@@ -10,8 +10,9 @@
 static inline void play_audio();
 static inline void pause_audio();
 static inline void queue_audio();
-static inline void draw_frame(Chip8 *chip8);
-static inline int get_input(Chip8 *chip8);
+static void create_sinewave(const int sample_len);
+static void draw_frame(Chip8 *chip8);
+static int get_input(Chip8 *chip8);
 
 static int keymap[16] = {
     SDL_SCANCODE_1,
@@ -39,7 +40,7 @@ SDL_AudioDeviceID audio_dev;
 SDL_AudioSpec audio_spec;
 SDL_Event e;
 
-uint32_t *pixels;
+uint32_t *pixels = NULL;
 
 int init_platform()
 {
@@ -76,12 +77,7 @@ int init_platform()
     audio_spec.channels = 1;
     audio_spec.samples = 1024;
 
-    float x = 0.0;
-    for (int i = 0; i < audio_spec.freq * INITIAL_AUDIO_CACHE; i++) {
-        x += 0.01;
-        int sinwave_sample = sin(x * 4) * 5000;
-        SDL_QueueAudio(audio_dev, &sinwave_sample, 2);
-    }
+    create_sinewave(INITIAL_AUDIO_CACHE);
 
     return 0;
 }
@@ -139,14 +135,19 @@ static int get_input(Chip8 *chip8)
     return 0;
 }
 
-static inline void queue_audio()
+static void create_sinewave(const int sample_len)
 {
     float x = 0.0;
-    for (int i = 0; i < audio_spec.freq * AUDIO_CACHE; i++) {
+    for (int i = 0; i < audio_spec.freq * sample_len; i++) {
         x += 0.01;
         int sinwave_sample = sin(x * 4) * 5000;
         SDL_QueueAudio(audio_dev, &sinwave_sample, 2);
     }
+}
+
+static inline void queue_audio()
+{
+    create_sinewave(AUDIO_CACHE);
 }
 
 static inline void play_audio()
