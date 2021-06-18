@@ -1,9 +1,7 @@
+#include "chip8.h"
+
 #include <SDL.h>
 
-#include "chip8.h"
-#include "platform.h"
-
-#define SCALE 20 // 64x32 multiplier
 #define INITIAL_AUDIO_CACHE 60 // seconds
 #define AUDIO_CACHE 5 // seconds
 
@@ -42,7 +40,7 @@ SDL_Event e;
 
 uint32_t *pixels = NULL;
 
-int init_platform()
+int init_platform(Options *options)
 {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0){
@@ -52,7 +50,8 @@ int init_platform()
 
     window = SDL_CreateWindow("CChip8", SDL_WINDOWPOS_CENTERED, \
                                         SDL_WINDOWPOS_CENTERED, \
-                                        64 * SCALE, 32 * SCALE, \
+                                        64 * options->scale, \
+                                        32 * options->scale, \
                                         SDL_WINDOW_SHOWN);
     if (window == NULL) printf("SDL: %s", SDL_GetError());
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

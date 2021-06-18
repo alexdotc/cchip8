@@ -1,5 +1,6 @@
-#include <string.h>
 #include "chip8.h"
+
+#include <string.h>
 
 #define FONT_START 0x000
 #define PROG_START 0x200

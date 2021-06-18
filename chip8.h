@@ -8,6 +8,12 @@
 #define GFXSIZE 2048
 #define STACKSIZE 16
 
+typedef struct Options{
+    unsigned int speed;
+    unsigned int scale;
+    const char *rom;
+} Options;
+
 typedef struct Chip8
 {
     const uint16_t memsize;
@@ -37,3 +43,6 @@ void reset(Chip8 *chip8);
 void dec_timers(Chip8 *chip8);
 void keypress(Chip8 *chip8);
 int load_rom(Chip8 *chip8, const char *path);
+
+int init_platform(Options *options);
+int update_platform(Chip8 *chip8);

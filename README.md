@@ -1,11 +1,21 @@
 # cchip8
 A CHIP-8 interpreter in C. SDL2 as a graphics frontend. All the basic functionality is there with a handful of games tested.
 
-## Instructions
-    make
-    ./chip8.out /path/to/your/rom
-    
-## Possible TODOs
+## System Requirements
 
-- Separate out ome of the boilerplate SDL code. Should have a platform layer
-- Getopt or some options lib for more command line options
+- Linux x64 with libc from the last 20ish years
+- SDL2 library and devel headers
+
+## Instructions to Build and Run
+    make
+    ./chip8.out [OPTIONS]... [ROM]
+
+## Options
+
+- `-x` to set the window scale to a 64x32 multiple (default: 20)
+- `-s` to set the CPU frequency (default: 600hz)
+
+## Credits
+
+[Cowgod's CHIP-8 spec/reference][1]: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+[Intro to Emulators][2]: https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
