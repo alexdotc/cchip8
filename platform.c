@@ -104,7 +104,7 @@ int update_platform(Chip8 *chip8)
 
 static void draw_frame(Chip8 *chip8)
 {
-    for (int i = 0; i < GFXSIZE; i++){
+    for (int i = 0; i < chip8->gfxsize; i++){
         if (chip8->gfx[i]) pixels[i] = 0xFFFFFFFF;
         else pixels[i] = 0xFF000000;
     }
@@ -125,16 +125,16 @@ static int get_input(Chip8 *chip8)
             SDL_Quit();
             return -1;
         }
+
         if (e.type == SDL_KEYDOWN)
-            for(int i = 0; i < 16; ++i){
+            for(int i = 0; i < 16; ++i)
                 if (keymap[i] == e.key.keysym.scancode)
                     chip8->key[i] = 1;
-            }
+
         if (e.type == SDL_KEYUP)
-            for(int i = 0; i < 16; ++i){
+            for(int i = 0; i < 16; ++i)
                 if (keymap[i] == e.key.keysym.scancode)
                         chip8->key[i] = 0;
-	        }
     }
     return 0;
 }

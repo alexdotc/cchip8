@@ -102,15 +102,12 @@ void reset(Chip8 *chip8)
     chip8->draw_cycle = false;
 
     srand((unsigned int)time(NULL));
-
-    return;
 }
 
 void dec_timers(Chip8 *chip8)
 {
     if (chip8->DT) --chip8->DT;
     if (chip8->ST) --chip8->ST;
-    return;
 }
 
 int cycle(Chip8 *chip8)
@@ -203,20 +200,17 @@ static inline void CLS(Chip8 *chip8)
 {
     memset(chip8->gfx, 0, chip8->gfxsize);
     chip8->draw_cycle = true;
-    return;
 }
 
 static inline void RET(Chip8 *chip8)
 {   
     chip8->SP--; // see comments in CALL
     chip8->PC = chip8->stack[chip8->SP];
-    return;
 }
 
 static inline void JP_Addr(Chip8 *chip8, uint16_t opcode)
 {
     chip8->PC = decode_nnn(opcode);
-    return;
 }
 
 static inline void CALL(Chip8 *chip8, uint16_t opcode)
@@ -224,68 +218,57 @@ static inline void CALL(Chip8 *chip8, uint16_t opcode)
     chip8->stack[chip8->SP] = chip8->PC; // this must be right
     chip8->SP++; // but these actions are reversed from Cowgod's (?)
     chip8->PC = decode_nnn(opcode);
-    return;
 }
 
 static inline void SE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     if(chip8->V[decode_vx(opcode)] == decode_nn(opcode)) chip8->PC += 2;
-    return;
 }
 
 static inline void SNE_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     if(chip8->V[decode_vx(opcode)] != decode_nn(opcode)) chip8->PC += 2;
-    return;
 }
 
 static inline void SE_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     if(chip8->V[decode_vx(opcode)] == chip8->V[decode_vy(opcode)]) chip8->PC += 2;
-    return;
 }
 
 static inline void SNE_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     if(chip8->V[decode_vx(opcode)] != chip8->V[decode_vy(opcode)]) chip8->PC += 2;
-    return;
 }
 
 static inline void LD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = decode_nn(opcode);
-    return;
 }
 
 static inline void ADD_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     // this instruction does not affect carry flag
     chip8->V[decode_vx(opcode)] += decode_nn(opcode);
-    return;
 }
 
 static inline void LD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = chip8->V[decode_vy(opcode)];
-    return;
 }
 
 static inline void OR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] |= chip8->V[decode_vy(opcode)];
-    return;
 }
 
 static inline void AND_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] &= chip8->V[decode_vy(opcode)];
-    return;
 }
 
 static inline void XOR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] ^= chip8->V[decode_vy(opcode)];
-    return;
 }
 
 static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
@@ -296,7 +279,6 @@ static inline void ADD_Vx_Vy(Chip8 *chip8, uint16_t opcode)
         chip8->V[0xF] = 1; // overflow
     else chip8->V[0xF] = 0;
     chip8->V[vx] += chip8->V[vy];
-    return;
 }
 
 static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
@@ -306,7 +288,6 @@ static inline void SUB_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     if(chip8->V[vx] > chip8->V[vy]) chip8->V[0xF] = 1; // ?
     else chip8->V[0xF] = 0; // ?
     chip8->V[vx] -= chip8->V[vy];
-    return;
 }
 
 static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
@@ -314,7 +295,6 @@ static inline void SHR_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     uint8_t vx = decode_vx(opcode);
     chip8->V[0xF] = 1 & chip8->V[vx];
     chip8->V[vx] >>= 1;
-    return;
 }
 
 static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode)
@@ -324,27 +304,22 @@ static inline void SUBN_Vx_Vy(Chip8 *chip8, uint16_t opcode)
     if(chip8->V[vy] > chip8->V[vx]) chip8->V[0xF] = 1; // ?
     else chip8->V[0xF] = 0; // ?
     chip8->V[vx] = chip8->V[vy] - chip8->V[vx];
-    return;
 }
 
 static inline void SHL_Vx_Vy(Chip8 *chip8, uint16_t opcode)
 {   uint8_t vx = decode_vx(opcode);
     chip8->V[0xF] = 1 & chip8->V[vx];
     chip8->V[vx] <<= 1;
-    // TODO overflow? no?
-    return;
 }
 
 static inline void LD_I_Addr(Chip8 *chip8, uint16_t opcode)
 {
     chip8->I = decode_nnn(opcode);
-    return;
 }
 
 static inline void RND_Vx_Byte(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = (uint8_t)(rand() % 256) & decode_nn(opcode);
-    return;
 }
 
 static inline void DRW(Chip8 *chip8, uint16_t opcode)
@@ -378,54 +353,45 @@ static inline void DRW(Chip8 *chip8, uint16_t opcode)
         dx -= m;
     }
     chip8->draw_cycle = true;
-    return;
 }
 
 static inline void SKP_Vx(Chip8 *chip8, uint16_t opcode)
 {   
     if (chip8->key[chip8->V[decode_vx(opcode)]]) chip8->PC += 2;
-    return;
 }
 static inline void SKNP_Vx(Chip8 *chip8, uint16_t opcode)
 {   
     if ( ! chip8->key[chip8->V[decode_vx(opcode)]]) chip8->PC += 2;
-    return;
 }
 
 static inline void LD_Vx_DT(Chip8 *chip8, uint16_t opcode)
 {
     chip8->V[decode_vx(opcode)] = chip8->DT;
-    return;
 }
 
 static inline void LD_ST_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->ST = chip8->V[decode_vx(opcode)];
-    return;
 }
 
 static inline void LD_DT_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->DT = chip8->V[decode_vx(opcode)];
-    return;
 }
 
 static inline void LD_ArrayI_Vx(Chip8 *chip8, uint16_t opcode)
 {
     memcpy(chip8->mem + chip8->I, chip8->V, decode_vx(opcode) + 1);
-    return;
 }
 
 static inline void LD_ArrayVx_I(Chip8 *chip8, uint16_t opcode)
 {
     memcpy(chip8->V, chip8->mem + chip8->I, decode_vx(opcode) + 1);
-    return;
 }
 
 static inline void LD_I_FontVx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->I = FONT_START + 5*chip8->V[decode_vx(opcode)];
-    return;
 }
 
 static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
@@ -435,14 +401,12 @@ static inline void LD_I_BCDVx(Chip8 *chip8, uint16_t opcode)
     chip8->mem[I] = vx / 100;
     chip8->mem[I+1] = (vx / 10) % 10;
     chip8->mem[I+2] = (vx % 100) % 10;
-    return;
 }
 
 static inline void ADD_I_Vx(Chip8 *chip8, uint16_t opcode)
 {
     chip8->I += chip8->V[decode_vx(opcode)];
     // TODO possibly put a switch on this for carry
-    return;
 }
 
 static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode)
@@ -453,11 +417,9 @@ static inline void LD_Vx_Key(Chip8 *chip8, uint16_t opcode)
             return;
         }
     chip8->PC -= 2; // block until we have a keypress
-    return;
 }
 
 static inline void JP_V0_Addr(Chip8 *chip8, uint16_t opcode)
 {
     chip8->PC = decode_nnn(opcode) + chip8->V[0];
-    return;
 }

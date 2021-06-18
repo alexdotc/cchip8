@@ -22,10 +22,10 @@ typedef struct Chip8
     uint8_t ST; // sound timer
 
     uint8_t V[16]; // data registers
-    uint16_t stack[16];
+    uint16_t stack[STACKSIZE];
  
-    uint8_t mem[4096];
-    uint8_t gfx[2048];
+    uint8_t mem[MEMSIZE];
+    uint8_t gfx[GFXSIZE];
     uint8_t key[16];
 
     bool draw_cycle;
