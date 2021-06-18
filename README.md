@@ -17,5 +17,5 @@ A CHIP-8 interpreter in C. SDL2 as a graphics frontend. All the basic functional
 
 ## Credits
 
-[Cowgod's CHIP-8 spec/reference][http://devernay.free.fr/hacks/chip8/C8TECH10.HTM] 
-[Intro to Emulators][https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/]
+[Cowgod's CHIP-8 spec/reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)  
+[Intro to Emulators](https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
