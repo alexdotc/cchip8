@@ -8,13 +8,14 @@
 #define GFXSIZE 2048
 #define STACKSIZE 16
 
-typedef struct Options{
+typedef struct
+{
     unsigned int speed;
     unsigned int scale;
     const char *rom;
 } Options;
 
-typedef struct Chip8
+typedef struct
 {
     const uint16_t memsize;
     const uint16_t gfxsize;

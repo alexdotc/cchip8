@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=$(shell sdl2-config --cflags) -lSDL2 -lm -std=c11 -Wall -O2
+CFLAGS=$(shell sdl2-config --cflags) -lSDL2 -lm -std=c99 -Wall -O2
 SRCDIR=src
 
 chip8:
