@@ -8,7 +8,7 @@ A CHIP-8 interpreter in C. SDL2 as a graphics frontend. All the basic functional
 
 ## Instructions to Build and Run
     make
-    ./chip8.out [OPTIONS]... [ROM]
+    ./chip8.out [OPTIONS]... ROM
 
 ## Options
 
